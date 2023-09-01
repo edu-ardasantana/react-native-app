@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "atv2",
+    "slug": "atv2",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
