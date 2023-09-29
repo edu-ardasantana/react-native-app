@@ -1,25 +1,66 @@
-import React,{useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Input, Button, Header, Icon } from 'react-native-elements';
+import axios from 'axios';
+import FlashMessage from "react-native-flash-message";
+import { showMessage, hideMessage } from "react-native-flash-message";
 
-function UpDelScreen({ navigation, route }) {
+function AlteraContatoScreen({ navigation, route }) {
 
+    const [id, setId] = useState();
     const [nome, setNome] = useState();
     const [email, setEmail] = useState();
     const [telefone, setTelefone] = useState();
+    const [avatar, setAvatar] = useState()
 
     useEffect(() => {
-        if (route.params) {
-            const { nome } = route.params;
-            setNome(nome);
 
-            const { email } = route.params;
-            setEmail(email);
+        setId(route.params.id);
+        setNome(route.params.nome);
+        setEmail(route.params.email);
+        setTelefone(route.params.telefone);
+        setAvatar(route.params.avatar_url)
 
-            const { telefone } = route.params;
-            setTelefone(telefone);
-        }
+        
     }, [])
+
+    function alterarDados() {
+
+        axios.put('http://localhost:3000/contatos/' + id, {
+            nome: nome,
+            telefone: telefone,
+            email: email,
+            avatar_url: avatar
+        }).then(function (response) {
+            showMessage({
+                message: "Contato alterado com sucesso!",
+                type: "success"
+            });
+            
+            navigation.navigate('ListaContato')
+        }).catch(function (error) {
+            console.log(error);
+
+        });
+
+
+    }
+
+    function excluirDados() {
+
+        axios.delete('http://localhost:3000/contatos/' + id)
+            .then(function (response) {
+                showMessage({
+                    message: "Contato excluído com sucesso!",
+                    type: "success"
+                });
+                navigation.navigate('ListaContato')
+            }).catch(function (error) {
+                console.log(error);
+
+            });
+
+    }
 
     return (
         <View>
@@ -31,7 +72,7 @@ function UpDelScreen({ navigation, route }) {
                         name='arrow-back'
                         color={'#fff'}
                         size={30}
-                        onPress={() => navigation.navigate('LsContatos')}
+                        onPress={() => navigation.navigate('ListaContato')}
                     />
                 }
                 centerComponent={{ text: 'Contato', style: { color: '#fff', fontWeight: 'bold', fontSize: '30px' } }}
@@ -47,6 +88,7 @@ function UpDelScreen({ navigation, route }) {
                         marginTop: 40,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setNome(text)}
                 />
 
                 <Input
@@ -56,6 +98,7 @@ function UpDelScreen({ navigation, route }) {
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setEmail(text)}
                 />
 
                 <Input
@@ -65,6 +108,7 @@ function UpDelScreen({ navigation, route }) {
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setTelefone(text)}
                 />
 
                 <Button
@@ -74,6 +118,7 @@ function UpDelScreen({ navigation, route }) {
                         height: 40,
                         width: 250,
                     }}
+                    onPress={() => alterarDados()}
                 />
 
                 <Button
@@ -84,13 +129,14 @@ function UpDelScreen({ navigation, route }) {
                         width: 250,
                         backgroundColor: 'red'
                     }}
+                    onPress={() => excluirDados()}
                 />
 
             </View>
-
+            <FlashMessage position="top" />
         </View>
 
     );
 }
 
-export default UpDelScreen;
+export default AlteraContatoScreen;

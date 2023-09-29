@@ -1,8 +1,39 @@
-import * as React from 'react';
-import { View, TextInput } from 'react-native';
-import { Avatar, Input, Button, Text } from 'react-native-elements';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { Avatar, Button, Input } from 'react-native-elements';
+import FlashMessage from "react-native-flash-message";
+import { showMessage, hideMessage } from "react-native-flash-message";
 
 function LoginScreen({ navigation }) {
+
+    const [getEmail, setEmail] = useState();
+    const [getSenha, setSenha] = useState();
+
+    function logar() {
+
+        axios.get('http://localhost:3000/usuarios?email=' + getEmail + '&senha=' + getSenha)
+            .then(function (response) {
+
+                if (response.data.length == 0) {
+                    showMessage({
+                        message: "Email ou senha inválidos",
+                        type: "danger",
+                    });
+                } else {
+                    navigation.navigate('ListaContato')
+                }
+            })
+            .catch(function (error) {
+                showMessage({
+                    message: "Algo deu errado: " + error,
+                    type: "danger",
+                });
+            });
+
+
+    }
+
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
@@ -18,11 +49,13 @@ function LoginScreen({ navigation }) {
 
 
             <Input
-                placeholder='Login'
+                placeholder='Email'
                 containerStyle={{
                     marginVertical: 20,
                     paddingHorizontal: 20,
                 }}
+                onChangeText={text => setEmail(text)}
+                value={getEmail}
             />
 
             <Input
@@ -32,6 +65,8 @@ function LoginScreen({ navigation }) {
                     marginVertical: 20,
                     paddingHorizontal: 20,
                 }}
+                onChangeText={text => setSenha(text)}
+                value={getSenha}
             />
 
             <Button
@@ -41,7 +76,8 @@ function LoginScreen({ navigation }) {
                     height: 40,
                     width: 250
                 }}
-                onPress={() => navigation.navigate('LsContatos')}
+                onPress={() => logar()}
+            // onPress={() => navigation.navigate('LsContatos')}
             />
 
             <Button
@@ -51,10 +87,10 @@ function LoginScreen({ navigation }) {
                     height: 40,
                     width: 250
                 }}
-                onPress={() => navigation.navigate('Cadastro')}
+                onPress={() => navigation.navigate('CadastraUsuario')}
             />
 
-
+            <FlashMessage position="top" />
         </View>
     );
 }

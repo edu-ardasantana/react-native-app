@@ -1,11 +1,39 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { Input, Button, Header, Icon } from 'react-native-elements';
+import axios from 'axios';
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 
-function CadastroScreen({ navigation }) {
+function CadastraUsuarioScreen({ navigation }) {
 
+    const [getNome, setNome] = useState();
+    const [getCpf, setCpf] = useState();
+    const [getEmail, setEmail] = useState();
+    const [getSenha, setSenha] = useState();
 
+    function inserirDados() {
 
+        axios.post('http://localhost:3000/usuarios'
+            , {
+                nome: getNome,
+                cpf: getCpf,
+                email: getEmail,
+                senha: getSenha
+            }).then(function (response) {
+                showMessage({
+                    message: "Usuário cadastrado com sucesso!",
+                    type: "success"
+                });
+                navigation.navigate('Login')
+            }).catch(function (error) {
+                console.log(error)
+                showMessage({
+                    message: "Algo deu errado: ",
+                    type: "danger",
+                });
+            });
+
+    }
 
     return (
         <View>
@@ -32,6 +60,8 @@ function CadastroScreen({ navigation }) {
                         marginTop: 40,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setNome(text)}
+                    value={getNome}
                 />
 
                 <Input
@@ -40,6 +70,8 @@ function CadastroScreen({ navigation }) {
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setCpf(text)}
+                    value={getCpf}
                 />
 
                 <Input
@@ -48,6 +80,8 @@ function CadastroScreen({ navigation }) {
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setEmail(text)}
+                    value={getEmail}
                 />
 
                 <Input
@@ -57,10 +91,13 @@ function CadastroScreen({ navigation }) {
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
+                    onChangeText={text => setSenha(text)}
+                    value={getSenha}
                 />
 
                 <Button
                     title="Salvar"
+                    onPress={() => inserirDados()}
                     buttonStyle={{
                         marginTop: 20,
                         height: 40,
@@ -69,10 +106,10 @@ function CadastroScreen({ navigation }) {
                 />
 
             </View>
-
+            <FlashMessage position="top" />
         </View>
 
     );
 }
 
-export default CadastroScreen;
+export default CadastraUsuarioScreen;
