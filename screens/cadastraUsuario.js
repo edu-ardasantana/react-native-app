@@ -1,36 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
-import { Input, Button, Header, Icon } from 'react-native-elements';
 import axios from 'axios';
-import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { Button, Header, Icon, Input } from 'react-native-elements';
+import FlashMessage, { showMessage } from "react-native-flash-message";
+
 
 function CadastraUsuarioScreen({ navigation }) {
 
-    const [getNome, setNome] = useState();
-    const [getCpf, setCpf] = useState();
-    const [getEmail, setEmail] = useState();
-    const [getSenha, setSenha] = useState();
+    const [email, setEmail] = useState();
+    const [senha, setSenha] = useState();
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC_DyavpfcaYwBgTLrguwE9mdPb1Yy_IXc",
+        authDomain: "aula-app-79f90.firebaseapp.com",
+        projectId: "aula-app-79f90",
+        storageBucket: "aula-app-79f90.appspot.com",
+        messagingSenderId: "605499630230",
+        appId: "1:605499630230:web:e78897140355abb98bd8b7",
+        measurementId: "G-KKYTCD9PC0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    const auth = getAuth();
 
     function inserirDados() {
 
-        axios.post('http://localhost:3000/usuarios'
-            , {
-                nome: getNome,
-                cpf: getCpf,
-                email: getEmail,
-                senha: getSenha
-            }).then(function (response) {
+        createUserWithEmailAndPassword(auth, email, senha)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
                 showMessage({
                     message: "Usuário cadastrado com sucesso!",
                     type: "success"
                 });
                 navigation.navigate('Login')
-            }).catch(function (error) {
-                console.log(error)
+
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
                 showMessage({
                     message: "Algo deu errado: ",
                     type: "danger",
                 });
+
             });
 
     }
@@ -54,34 +72,13 @@ function CadastraUsuarioScreen({ navigation }) {
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
                 <Input
-                    placeholder='Nome'
-                    containerStyle={{
-                        marginVertical: 20,
-                        marginTop: 40,
-                        paddingHorizontal: 20,
-                    }}
-                    onChangeText={text => setNome(text)}
-                    value={getNome}
-                />
-
-                <Input
-                    placeholder='CPF'
-                    containerStyle={{
-                        marginVertical: 20,
-                        paddingHorizontal: 20,
-                    }}
-                    onChangeText={text => setCpf(text)}
-                    value={getCpf}
-                />
-
-                <Input
                     placeholder='e-mail'
                     containerStyle={{
                         marginVertical: 20,
                         paddingHorizontal: 20,
                     }}
                     onChangeText={text => setEmail(text)}
-                    value={getEmail}
+                    value={email}
                 />
 
                 <Input
@@ -92,7 +89,7 @@ function CadastraUsuarioScreen({ navigation }) {
                         paddingHorizontal: 20,
                     }}
                     onChangeText={text => setSenha(text)}
-                    value={getSenha}
+                    value={senha}
                 />
 
                 <Button

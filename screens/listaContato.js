@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Avatar, Header, Icon, ListItem } from 'react-native-elements';
 import { ScrollView } from 'react-native-web';
+import { getAuth, signOut } from "firebase/auth";
 
 function ListaContatoScreen({ navigation }) {
 
@@ -29,6 +30,18 @@ function ListaContatoScreen({ navigation }) {
 
     }, [isFocused])
 
+    const auth = getAuth();
+
+    function logout() {
+
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            navigation.navigate('Login')
+            }).catch((error) => {
+            // An error happened.
+            });
+
+    }
   
 
     return (
@@ -37,6 +50,14 @@ function ListaContatoScreen({ navigation }) {
             <Header
                 centerComponent={{ text: 'Lista de Contatos', style: { color: '#fff', fontWeight: 'bold', fontSize: '25px' } }}
                 rightComponent={
+                    <Icon
+                        name='logout'
+                        color={'#fff'}
+                        size={25}
+                        onPress={() => logout() }
+                    />
+                }
+                leftComponent={
                     <Icon
                         name='add'
                         color={'#fff'}
