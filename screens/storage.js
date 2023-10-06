@@ -3,14 +3,14 @@ import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { getStorage, list, ref, uploadBytes } from "firebase/storage";
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { Image, View, ScrollView } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export default function StorageScreen({ navigation }) {
 
   const [imageUri, setImageUri] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [listaLinks,setListaLinks] = useState([]);
+  const [img, setImg] = useState([]);
 
   const firebaseConfig = {
     apiKey: "AIzaSyC_DyavpfcaYwBgTLrguwE9mdPb1Yy_IXc",
@@ -69,21 +69,25 @@ export default function StorageScreen({ navigation }) {
     // Create a reference under which you want to list
     const storage = getStorage();
     const listRef = ref(storage);
-    
+
     // Fetch the first page of 100.
     const firstPage = await list(listRef, { maxResults: 100 });
 
-    firstPage.items.map((item) =>{ 
-    console.log('https://firebasestorage.googleapis.com/v0/b/' +
-    item.bucket + '/o/' + item.fullPath + '?alt=media')
+    var imgs = firstPage.items.map((item) => {
+      return {
+        link: 'https://firebasestorage.googleapis.com/v0/b/' +
+          item.bucket + '/o/' + item.fullPath + '?alt=media'
+      }
     })
-    setListaLinks(firstPage.items)
-    console.log(listaLinks)
-    }
+
+    console.log(imgs)
+    setImg(imgs)
+  }
 
   return (
 
-    
+
+    <ScrollView>
       <View style={{
         flex: 1, alignItems: 'center'
         , justifyContent:
@@ -91,7 +95,7 @@ export default function StorageScreen({ navigation }) {
       }}>
         <Button title="Escolher Imagem" onPress={pickImage} />
         {imageUri && <Image source={{ uri: imageUri }} style={{
-          width: 200, height: 200, marginVertical: 20
+          width: 200, height: 200, marginTop: 20
         }} />}
         {uploading ? (
           <ActivityIndicator size="large" color="#0000ff" />
@@ -102,9 +106,17 @@ export default function StorageScreen({ navigation }) {
             }} />
         )}
         <Button title="Ver Imagens" onPress={LinkImage} />
-        
+        {
+          img ? img.map((l, i) => (
+            <Image source={{ uri: l.link }} style={{
+              width: 200,
+              height: 200, marginVertical: 20
+            }} />
+          )) : false
+        }
       </View>
-    
+    </ScrollView>
+
 
   )
 
