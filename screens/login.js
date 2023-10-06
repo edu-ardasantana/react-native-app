@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -6,7 +5,6 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Avatar, Button, Input, SocialIcon } from 'react-native-elements';
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import GoogleButton from 'react-google-button'
 
 function LoginScreen({ navigation }) {
 
@@ -126,8 +124,6 @@ function LoginScreen({ navigation }) {
                     width: 250
                 }}
             />
-
-
             <Button
                 title="Cadastre-se"
                 buttonStyle={{
